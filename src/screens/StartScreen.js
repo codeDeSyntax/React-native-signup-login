@@ -2,7 +2,7 @@ import React from "react";
 import { ImageBackground, StyleSheet, View, Text, Pressable,Image, } from "react-native";
 import { theme } from "../core/theme";
 
-export default function Background() {
+export default function Background({navigation}) {
   return (
     <ImageBackground
       source={require("../assets/dot.png")}
@@ -13,11 +13,14 @@ export default function Background() {
 
       <Text style={styles.headerText}>Welcome to our Homepage</Text>
       <Text style={styles.descriptionText}>Login or signup to explore more features on this app</Text>
-      
-    <Pressable>
+
+    <Pressable style={styles.signupBtn} onPress={(e) => {
+      e.preventDefault();
+      navigation.navigate('RegisterScreen')
+    }}>
       Sign up
     </Pressable>
-    <Pressable>
+    <Pressable style={styles.loginBtn}>
       Login
     </Pressable>
       
@@ -49,11 +52,39 @@ const styles = StyleSheet.create({
   headerText:{
     fontSize:20,
     fontWeight:'bold',
-
+    color:theme.colors.secondary
   },
 
   descriptionText:{
     fontSize:15,
-    textAlign:'center'
-  }
+    textAlign:'center',
+    marginBottom:10,
+  },
+  
+  signupBtn:{
+    width:300,
+    height:20,
+    padding:18,
+    borderWidth:1,
+    borderColor:theme.colors.primary,
+    marginTop:10,
+    borderRadius:8,
+    display:'flex',
+    alignItems:'center',
+    justifyContent:'center'
+  },
+  loginBtn:{
+    width:300,
+    height:20,
+    backgroundColor:theme.colors.primary,
+    color:theme.colors.background,
+    borderRadius:8,
+    padding:20,
+    marginTop:10,
+    display:'flex',
+    alignItems:'center',
+    justifyContent:'center'
+  },
+
+
 });
