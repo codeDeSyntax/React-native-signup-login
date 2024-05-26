@@ -16,7 +16,10 @@ import { nameValidator } from "../helpers/nameValidator";
 import Background from "../components/Background";
 import DividerWithIcons from "../components/SocialMedia";
 
-export default function RegisterScreen({ navigation }) {
+
+export default function RegisterScreen({ navigation })
+ {
+ 
   const [name, setName] = useState({ value: "", error: "" });
   const [email, setEmail] = useState({ value: "", error: "" });
   const [password, setPassword] = useState({ value: "", error: "" });
@@ -25,16 +28,10 @@ export default function RegisterScreen({ navigation }) {
     const nameError = nameValidator(name.value);
     const emailError = emailValidator(email.value);
     const passwordError = passwordValidator(password.value);
-    if (emailError || passwordError || nameError) {
-      setName({ ...name, error: nameError });
-      setEmail({ ...email, error: emailError });
-      setPassword({ ...password, error: passwordError });
-      return;
-    }
-    navigation.reset({
-      index: 0,
-      routes: [{ name: "Dashboard" }],
-    });
+    // if (emailError || passwordError || nameError) {
+    //   return;
+    // }
+    navigation.navigate("LoginScreen");
   };
 
   return (
@@ -42,17 +39,15 @@ export default function RegisterScreen({ navigation }) {
       <View style={styles.container}>
         <ImageBackground
           style={styles.ai}
-          source={require("../assets/Ai.jpeg")}
+          source={require("../../assets/Ai.jpeg")}
+          imageStyle={{borderBottomRightRadius:100}}
         >
           <View style={styles.arrow}>
             <Pressable
               style={styles.signupBack}
               onPress={() => navigation.goBack()}
             >
-              <Image
-                style={styles.image}
-                source={require("../assets/back.png")}
-              />
+              <Text style={styles.image}>↩</Text>
             </Pressable>
           </View>
         </ImageBackground>
@@ -92,20 +87,18 @@ export default function RegisterScreen({ navigation }) {
           {password.error ? (
             <Text style={styles.errorText}>{password.error}</Text>
           ) : null}
-          <Button
+         <Pressable 
             onPress={onSignUpPressed}
-            style={{ marginTop: 24 }}
-            title="Sign up"
-          />
-
+            style={styles.signup}
+            title="Sign up">Sign up</Pressable>
           <View style={styles.row}>
             <Text>I already have an account!</Text>
-          </View>
-          <View style={styles.row}>
             <Pressable onPress={() => navigation.replace("LoginScreen")}>
               <Text style={styles.link}>Log in</Text>
             </Pressable>
           </View>
+
+        
         </View>
         <DividerWithIcons />
       </View>
@@ -137,28 +130,41 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     alignItems: "center",
     // justifyContent: "center",
-    borderBottomEndRadius: 50,
-    borderBottomStartRadius: 50,
-    marginTop: -20, // Adjust the top margin to avoid overlap
+   
+    
   },
   ai: {
     width: "100%",
-    height: 200, // Set the height to avoid overlap
+    height: 250, // Set the height to avoid overlap
+    borderBottomRightRadius:100,
   },
   signupBack: {
     height: 24,
     width: 24,
     marginBottom: 20,
   },
+  signup:{
+    width:300,
+    height:20,
+    padding:18,
+    backgroundColor:theme.colors.primary,
+    marginTop:10,
+    color:theme.colors.background,
+    borderRadius:8,
+    display:'flex',
+    alignItems:'center',
+    justifyContent:'center'
+  },
   image: {
-    height: 24,
-    width: 24,
+   fontSize:30,
+   color:theme.colors.background
   },
   headerText: {
     fontSize: 20,
     fontWeight: "bold",
     color: theme.colors.text,
     marginBottom: 8,
+    paddingVertical:8
   },
   arrow: {
     width: "100%",
@@ -166,6 +172,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-start",
+    paddingHorizontal:20,
   },
   errorText: {
     color: "red",

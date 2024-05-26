@@ -5,11 +5,11 @@ import { theme } from "../core/theme";
 export default function Background({navigation}) {
   return (
     <ImageBackground
-      source={require("../assets/dot.png")}
+      source={require("../../assets/aiHand.jpeg")}
       // resizeMode="repeat"
       style={styles.container}
     >
-      <Image source={require("../assets/startImgg.png")} style={styles.startImg}/>
+      <Image source={require("../../assets/startImgg.png")} style={styles.startImg}/>
 
       <Text style={styles.headerText}>Welcome to our Homepage</Text>
       <Text style={styles.descriptionText}>Login or signup to explore more features on this app</Text>
@@ -38,7 +38,8 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     width: "100%",
-    backgroundColor:theme.colors.background,
+    height:'100%',
+    // backgroundColor:theme.colors.background,
     alignSelf: "center",
     alignItems: "center",
 
@@ -52,13 +53,14 @@ const styles = StyleSheet.create({
   headerText:{
     fontSize:20,
     fontWeight:'bold',
-    color:theme.colors.secondary
+    color:theme.colors.background
   },
 
   descriptionText:{
     fontSize:15,
     textAlign:'center',
     marginBottom:10,
+    color:theme.colors.background
   },
   
   signupBtn:{
@@ -66,7 +68,7 @@ const styles = StyleSheet.create({
     height:20,
     padding:18,
     borderWidth:1,
-    borderColor:theme.colors.primary,
+    borderColor:theme.colors.background,
     marginTop:10,
     borderRadius:8,
     display:'flex',

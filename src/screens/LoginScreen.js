@@ -1,11 +1,6 @@
 import React, { useState } from 'react'
-import { TouchableOpacity, StyleSheet, View } from 'react-native'
-import { Text } from 'react-native'
+import { Pressable, StyleSheet, View, TextInput, Text,ImageBackground,Image } from 'react-native'
 import Background from '../components/Background'
-import Logo from '../components/Logo'
-import Header from '../components/Header'
-import Button from '../components/Button'
-import TextInput from '../components/TextInput'
 import BackButton from '../components/BackButton'
 import { theme } from '../core/theme'
 import { emailValidator } from '../helpers/emailValidator'
@@ -25,59 +20,95 @@ export default function LoginScreen({ navigation }) {
     }
     navigation.reset({
       index: 0,
-      routes: [{ name: 'Dashboard' }],
+      routes: [{ name: 'Home' }],
     })
   }
 
   return (
     <Background>
-      <BackButton goBack={navigation.goBack} />
-      <Logo />
-      <Header>Hello.</Header>
-      <TextInput
-        label="Email"
+      {/* <BackButton goBack={navigation.goBack} /> */}
+      <ImageBackground
+          style={styles.ai}
+          source={require("../../assets/Ai.jpeg")}
+          imageStyle={{ borderBottomRightRadius: 100 }}
+        >
+          <View style={styles.arrow}>
+            <Pressable
+              style={styles.signupBack}
+              onPress={() => navigation.goBack()}
+            >
+              <Text style={styles.image}>↩</Text>
+            </Pressable>
+          </View>
+        </ImageBackground>
+        <Text style={styles.headerText}>Log in</Text>
+     <View style={styles.loginForm}>
+     <TextInput
+        style={styles.input}
+        placeholder="Email"
         returnKeyType="next"
         value={email.value}
         onChangeText={(text) => setEmail({ value: text, error: '' })}
         error={!!email.error}
-        errorText={email.error}
         autoCapitalize="none"
-        autoCompleteType="email"
-        textContentType="emailAddress"
         keyboardType="email-address"
       />
+      {email.error ? <Text style={styles.errorText}>{email.error}</Text> : null}
       <TextInput
-        label="Password"
+        style={styles.input}
+        placeholder="Password"
         returnKeyType="done"
         value={password.value}
         onChangeText={(text) => setPassword({ value: text, error: '' })}
         error={!!password.error}
-        errorText={password.error}
         secureTextEntry
       />
+      {password.error ? <Text style={styles.errorText}>{password.error}</Text> : null}
       <View style={styles.forgotPassword}>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('ResetPasswordScreen')}
-        >
-          <Text style={styles.forgot}>Forgot your password ?</Text>
-        </TouchableOpacity>
+        <Pressable onPress={() => navigation.navigate('ResetPasswordScreen')}>
+          <Text style={styles.forgot}>Forgot your password?</Text>
+        </Pressable>
       </View>
-      <Button mode="contained" onPress={onLoginPressed}>
-        Log in
-      </Button>
+      <Pressable style={styles.button} onPress={onLoginPressed}>
+        <Text style={styles.buttonText}>Log in</Text>
+      </Pressable>
       <View style={styles.row}>
-        <Text>You do not have an account yet ?</Text> 
+        <Text>You do not have an account yet?</Text>
+        <Pressable onPress={() => navigation.replace('RegisterScreen')}>
+          <Text style={styles.link}> Create!</Text>
+        </Pressable>
       </View>
-      <View style={styles.row}>
-      <TouchableOpacity onPress={() => navigation.replace('RegisterScreen')}>
-          <Text style={styles.link}>Create !</Text>
-        </TouchableOpacity>
-      </View>
+     </View>
+    <View style={styles.aiHead}>
+    <Image source={require('../../assets/aiConnect.png')}/>
+    </View>
     </Background>
   )
 }
 
 const styles = StyleSheet.create({
+  input: {
+    width: "100%",
+    padding: 12,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    // backgroundColor: '#fff',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 12,
+    marginTop: 5,
+  },
   forgotPassword: {
     width: '100%',
     alignItems: 'flex-end',
@@ -86,6 +117,8 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     marginTop: 4,
+    flex:1,
+    justifyContent: 'center',
   },
   forgot: {
     fontSize: 13,
@@ -94,5 +127,51 @@ const styles = StyleSheet.create({
   link: {
     fontWeight: 'bold',
     color: theme.colors.primary,
+  },
+  ai: {
+    width: "100%",
+    height: 300, // Set the height to avoid overlap
+    borderBottomRightRadius:100,
+  },
+  aiHold:{
+    borderBottomRightRadius:100,
+  },
+  aiHead:{
+    display:'flex',
+    alignItems:'center',
+    justifyContent:'center',
+  },
+  arrow: {
+    width: "100%",
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-start",
+    paddingHorizontal:20,
+  },
+  image:{
+    fontSize:30,
+   color:theme.colors.background
+  },
+  button: {
+    backgroundColor: theme.colors.primary,
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  loginForm:{
+    padding:20,
+  },
+  headerText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: theme.colors.text,
+    textAlign:'center',
+    paddingVertical:8
+  },
+  buttonText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
 })
