@@ -1,101 +1,131 @@
-import React, { useState } from 'react'
-import { Pressable, StyleSheet, View, TextInput, Text,ImageBackground,Image } from 'react-native'
-import Background from '../components/Background'
-import BackButton from '../components/BackButton'
-import { theme } from '../core/theme'
-import { emailValidator } from '../helpers/emailValidator'
-import { passwordValidator } from '../helpers/passwordValidator'
+import React, { useState } from 'react';
+import {
+  View,
+  StyleSheet,
+  Pressable,
+  TextInput,
+  Text,
+  ImageBackground,
+  Modal,
+  Image,
+} from 'react-native';
+import Background from '../components/Background';
+import { theme } from '../core/theme';
+import { emailValidator } from '../helpers/emailValidator';
+import { passwordValidator } from '../helpers/passwordValidator';
 
 export default function LoginScreen({ navigation }) {
-  const [email, setEmail] = useState({ value: '', error: '' })
-  const [password, setPassword] = useState({ value: '', error: '' })
+  const [email, setEmail] = useState({ value: '', error: '' });
+  const [password, setPassword] = useState({ value: '', error: '' });
+  const [modalVisible, setModalVisible] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const onLoginPressed = () => {
-    const emailError = emailValidator(email.value)
-    const passwordError = passwordValidator(password.value)
+    const emailError = emailValidator(email.value);
+    const passwordError = passwordValidator(password.value);
     if (emailError || passwordError) {
-      setEmail({ ...email, error: emailError })
-      setPassword({ ...password, error: passwordError })
-      return
+      setErrorMessage(emailError || passwordError);
+      setModalVisible(true);
+      setEmail({ ...email, error: emailError });
+      setPassword({ ...password, error: passwordError });
+      return;
     }
     navigation.reset({
       index: 0,
       routes: [{ name: 'Home' }],
-    })
-  }
+    });
+  };
 
   return (
     <Background>
-      {/* <BackButton goBack={navigation.goBack} /> */}
       <ImageBackground
-          style={styles.ai}
-          source={require("../../assets/Ai.jpeg")}
-          imageStyle={{ borderBottomRightRadius: 100 }}
-        >
-          <View style={styles.arrow}>
+        style={styles.ai}
+        source={require('../../assets/Ai.jpeg')}
+        imageStyle={{ borderBottomRightRadius: 100 }}
+      >
+        <View style={styles.arrow}>
+          <Pressable
+            style={styles.signupBack}
+            onPress={() => navigation.goBack()}
+          >
+            <Text style={styles.image}>↩</Text>
+          </Pressable>
+        </View>
+      </ImageBackground>
+      <Text style={styles.headerText}>Log in</Text>
+      <View style={styles.loginForm}>
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          returnKeyType="next"
+          value={email.value}
+          onChangeText={(text) => setEmail({ value: text, error: '' })}
+          error={!!email.error}
+          autoCapitalize="none"
+          keyboardType="email-address"
+        />
+        {email.error ? <Text style={styles.errorText}>{email.error}</Text> : null}
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          returnKeyType="done"
+          value={password.value}
+          onChangeText={(text) => setPassword({ value: text, error: '' })}
+          error={!!password.error}
+          secureTextEntry
+        />
+        {password.error ? <Text style={styles.errorText}>{password.error}</Text> : null}
+        <View style={styles.forgotPassword}>
+          <Pressable onPress={() => navigation.navigate('ResetPasswordScreen')}>
+            <Text style={styles.forgot}>Forgot your password?</Text>
+          </Pressable>
+        </View>
+        <Pressable style={styles.button} onPress={onLoginPressed}>
+          <Text style={styles.buttonText}>Log in</Text>
+        </Pressable>
+        <View style={styles.row}>
+          <Text>You do not have an account yet?</Text>
+          <Pressable onPress={() => navigation.replace('RegisterScreen')}>
+            <Text style={styles.link}> Create!</Text>
+          </Pressable>
+        </View>
+      </View>
+      <View style={styles.aiHead}>
+        <Image source={require('../../assets/aiConnect.png')} />
+      </View>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.modalView}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalText}>{errorMessage}</Text>
             <Pressable
-              style={styles.signupBack}
-              onPress={() => navigation.goBack()}
+              style={[styles.button, styles.buttonClose]}
+              onPress={() => setModalVisible(!modalVisible)}
             >
-              <Text style={styles.image}>↩</Text>
+              <Text style={styles.textStyle}>Close</Text>
             </Pressable>
           </View>
-        </ImageBackground>
-        <Text style={styles.headerText}>Log in</Text>
-     <View style={styles.loginForm}>
-     <TextInput
-        style={styles.input}
-        placeholder="Email"
-        returnKeyType="next"
-        value={email.value}
-        onChangeText={(text) => setEmail({ value: text, error: '' })}
-        error={!!email.error}
-        autoCapitalize="none"
-        keyboardType="email-address"
-      />
-      {email.error ? <Text style={styles.errorText}>{email.error}</Text> : null}
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        returnKeyType="done"
-        value={password.value}
-        onChangeText={(text) => setPassword({ value: text, error: '' })}
-        error={!!password.error}
-        secureTextEntry
-      />
-      {password.error ? <Text style={styles.errorText}>{password.error}</Text> : null}
-      <View style={styles.forgotPassword}>
-        <Pressable onPress={() => navigation.navigate('ResetPasswordScreen')}>
-          <Text style={styles.forgot}>Forgot your password?</Text>
-        </Pressable>
-      </View>
-      <Pressable style={styles.button} onPress={onLoginPressed}>
-        <Text style={styles.buttonText}>Log in</Text>
-      </Pressable>
-      <View style={styles.row}>
-        <Text>You do not have an account yet?</Text>
-        <Pressable onPress={() => navigation.replace('RegisterScreen')}>
-          <Text style={styles.link}> Create!</Text>
-        </Pressable>
-      </View>
-     </View>
-    <View style={styles.aiHead}>
-    <Image source={require('../../assets/aiConnect.png')}/>
-    </View>
+        </View>
+      </Modal>
     </Background>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   input: {
-    width: "100%",
+    width: '100%',
     padding: 12,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: '#ccc',
     borderRadius: 8,
-    // backgroundColor: '#fff',
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -117,7 +147,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     marginTop: 4,
-    flex:1,
+    flex: 1,
     justifyContent: 'center',
   },
   forgot: {
@@ -129,29 +159,29 @@ const styles = StyleSheet.create({
     color: theme.colors.primary,
   },
   ai: {
-    width: "100%",
+    width: '100%',
     height: 300, // Set the height to avoid overlap
-    borderBottomRightRadius:100,
+    borderBottomRightRadius: 100,
   },
-  aiHold:{
-    borderBottomRightRadius:100,
+  aiHold: {
+    borderBottomRightRadius: 100,
   },
-  aiHead:{
-    display:'flex',
-    alignItems:'center',
-    justifyContent:'center',
+  aiHead: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   arrow: {
-    width: "100%",
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-start",
-    paddingHorizontal:20,
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    paddingHorizontal: 20,
   },
-  image:{
-    fontSize:30,
-   color:theme.colors.background
+  image: {
+    fontSize: 30,
+    color: theme.colors.background,
   },
   button: {
     backgroundColor: theme.colors.primary,
@@ -160,18 +190,51 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginVertical: 10,
   },
-  loginForm:{
-    padding:20,
+  loginForm: {
+    padding: 20,
   },
   headerText: {
     fontSize: 20,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     color: theme.colors.text,
-    textAlign:'center',
-    paddingVertical:8
+    textAlign: 'center',
+    paddingVertical: 8,
   },
   buttonText: {
     color: 'white',
     fontWeight: 'bold',
   },
-})
+  modalView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  modalContent: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  buttonClose: {
+    backgroundColor: theme.colors.primary,
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+});

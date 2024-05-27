@@ -7,7 +7,7 @@ export default function BackButton({ goBack }) {
     <Pressable onPress={goBack} style={styles.container}>
       <Image
         style={styles.image}
-        source={require('../assets/back.png')}
+        source={require('../../assets/back.png')}
       />
     </Pressable>
   )
