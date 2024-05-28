@@ -1,5 +1,5 @@
 // App.js
-import React from "react";
+import  { useState,useContext } from "react";
 import {
   View,
   StyleSheet,
@@ -7,9 +7,12 @@ import {
   ImageBackground,
   Pressable,
   Text,
+  ScrollView,
+  TextInput,
 } from "react-native";
 import Card from "../components/Card";
 import { theme } from "../core/theme";
+import { UserContext } from "../core/useContext";
 
 const DATA = [
   {
@@ -55,6 +58,9 @@ const DATA = [
 ];
 
 const Home = ({ navigation }) => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const { username } = useContext(UserContext);
+
   const renderItem = ({ item }) => (
     <Card
       image={item.image}
@@ -66,38 +72,42 @@ const Home = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <ImageBackground
-        style={styles.ai}
-        source={require("../../assets/allAi.jpeg")}
-        imageStyle={{ borderBottomRightRadius: 100 }}
-      >
-        <View style={styles.arrow}>
-          <Pressable
-            style={styles.signupBack}
-            onPress={() => navigation.navigate("RegisterScreen")}
-          >
-            <Text style={styles.image}>↩</Text>
-          </Pressable>
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        <View style={styles.userContainer}>
+          <Text style={styles.username}>{username}</Text>
         </View>
-        <Text
-          style={{
-            color: "#fafafa",
-            textAlign: "center",
-            fontSize: 20,
-            marginBottom: 20,
-            fontFamily:'monospace'
-          }}
+        <ImageBackground
+          style={styles.ai}
+          source={require("../../assets/allAi.jpeg")}
+          imageStyle={{ borderBottomRightRadius: 100 }}
         >
-          Welcome to AllAI-homie
-        </Text>
-      </ImageBackground>
-      <Text style={styles.headerText}>Explore a tonne of AI awesome tools</Text>
-      <FlatList
-        data={DATA}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        numColumns={2}
-      />
+          <Text style={styles.welcomeText}>
+            Welcome to AllAI-homie
+          </Text>
+        </ImageBackground>
+        <Text style={styles.headerText}>Explore a tonne of AI awesome tools</Text>
+        <TextInput
+          style={styles.searchBar}
+          placeholder="Search AI tools..."
+          placeholderTextColor="#888"
+          value={searchQuery}
+          onChangeText={(text) => setSearchQuery(text)}
+        />
+        <FlatList
+          data={DATA}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+          numColumns={2}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.flatList}
+        />
+      </ScrollView>
+      <Pressable
+        style={styles.signupBack}
+        onPress={() => navigation.navigate("RegisterScreen")}
+      >
+        <Text style={styles.image}>↩</Text>
+      </Pressable>
     </View>
   );
 };
@@ -106,33 +116,76 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.colors.background,
-    padding: 5,
+    padding: 10,
+  },
+  scrollViewContent: {
+    flexGrow: 1,
+  },
+  userContainer: {
+    padding: 10,
+    backgroundColor: theme.colors.primary,
+    borderRadius: 10,
+    marginBottom: 10,
+    alignItems: "center",
+  },
+  username: {
+    fontSize: 20,
+    color: "#fff",
+    textAlign: "center",
+    fontWeight: "bold",
   },
   ai: {
     width: "100%",
-    height: 250, // Set the height to avoid overlap
+    height: 250,
     borderBottomRightRadius: 100,
+    marginBottom: 20,
+    overflow: "hidden",
+    justifyContent: "flex-end",
+    alignItems: "center",
+    padding: 10,
   },
   signupBack: {
-    height: 24,
-    width: 24,
-    marginBottom: 20,
+    position: "absolute",
+    top: 20,
+    left: 20,
+    height: 30,
+    width: 30,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: theme.colors.primary,
+    borderRadius: 15,
+    zIndex: 1,
   },
-  arrow: {
-    padding: 20,
+  welcomeText: {
+    color: "#fafafa",
+    textAlign: "center",
+    fontSize: 22,
+    marginBottom: 20,
+    fontFamily: 'monospace',
+    fontWeight: 'bold',
   },
   headerText: {
-    fontSize: 15,
+    fontSize: 18,
     fontWeight: "bold",
-    textAlign:'center',
+    textAlign: 'center',
     color: theme.colors.primary,
-    marginBottom: 8,
-    paddingVertical: 8,
+    marginBottom: 15,
+  },
+  searchBar: {
+    height: 40,
+    borderColor: theme.colors.primary,
+    borderWidth: 1,
+    borderRadius: 20,
+    paddingHorizontal: 15,
+    marginVertical: 10,
+    fontSize: 16,
+    backgroundColor: "#fff",
   },
   image: {
     fontSize: 24,
     color: "#fff",
   },
+  
 });
 
 export default Home;

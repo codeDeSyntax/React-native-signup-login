@@ -16,6 +16,7 @@ import { passwordValidator } from "../helpers/passwordValidator";
 import { nameValidator } from "../helpers/nameValidator";
 import Background from "../components/Background";
 import DividerWithIcons from "../components/SocialMedia";
+import { UserContext } from "../core/useContext";
 
 export default function RegisterScreen({ navigation }) {
   const [name, setName] = useState({ value: "", error: "" });
@@ -24,6 +25,7 @@ export default function RegisterScreen({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  //  const { setUsername } = useContext(UserContext);
 
   const signupData = {
     username: name.value,
@@ -44,6 +46,7 @@ export default function RegisterScreen({ navigation }) {
     try {
       const response = await axios.post('http://localhost:3000/signup', signupData);
       if (response.status === 201) {
+
         setLoading(false); // Stop loading
         navigation.navigate("LoginScreen");
       }

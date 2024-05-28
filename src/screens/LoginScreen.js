@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState , useContext } from 'react';
 import {
   View,
   StyleSheet,
@@ -8,19 +8,24 @@ import {
   ImageBackground,
   Modal,
   Image,
+  ActivityIndicator,
 } from 'react-native';
 import Background from '../components/Background';
 import { theme } from '../core/theme';
 import { emailValidator } from '../helpers/emailValidator';
 import { passwordValidator } from '../helpers/passwordValidator';
+import axios from 'axios';
+import { UserContext } from '../core/useContext';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState({ value: '', error: '' });
   const [password, setPassword] = useState({ value: '', error: '' });
   const [modalVisible, setModalVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+  const { setUsername } = useContext(UserContext);
 
-  const onLoginPressed = () => {
+  const onLoginPressed = async () => {
     const emailError = emailValidator(email.value);
     const passwordError = passwordValidator(password.value);
     if (emailError || passwordError) {
@@ -30,10 +35,38 @@ export default function LoginScreen({ navigation }) {
       setPassword({ ...password, error: passwordError });
       return;
     }
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'Home' }],
-    });
+
+    setLoading(true); // Start loading
+    try {
+      const response = await axios.post('http://localhost:3000/login', {
+        email: email.value,
+        password: password.value,
+      });
+      console.log(response.data)
+      setUsername(response.data.user.username)
+      if (response.status === 200) {
+        setLoading(false); // Stop loading
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Home' }],
+        });
+      }
+    } catch (error) {
+      setLoading(false); 
+      if (error.response) {
+        if (error.response.status === 400) {
+          setErrorMessage(error.response.data.message);
+        } else if (error.response.status === 500) {
+          setErrorMessage('something went wrong on our side');
+        } else {
+          setErrorMessage('An unknown error occurred');
+        }
+      } else {
+        setErrorMessage('Network error');
+      }
+      setModalVisible(true);
+      console.log({ message: 'error during login', error: error });
+    }
   };
 
   return (
@@ -46,11 +79,12 @@ export default function LoginScreen({ navigation }) {
         <View style={styles.arrow}>
           <Pressable
             style={styles.signupBack}
-            onPress={() => navigation.goBack()}
+            onPress={() => navigation.navigate('LoginScreen')}
           >
             <Text style={styles.image}>↩</Text>
           </Pressable>
         </View>
+
       </ImageBackground>
       <Text style={styles.headerText}>Log in</Text>
       <View style={styles.loginForm}>
@@ -74,14 +108,18 @@ export default function LoginScreen({ navigation }) {
           error={!!password.error}
           secureTextEntry
         />
-        {password.error ? <Text style={styles.errorText}>{password.error}</Text> : null}
+        
         <View style={styles.forgotPassword}>
           <Pressable onPress={() => navigation.navigate('ResetPasswordScreen')}>
             <Text style={styles.forgot}>Forgot your password?</Text>
           </Pressable>
         </View>
         <Pressable style={styles.button} onPress={onLoginPressed}>
-          <Text style={styles.buttonText}>Log in</Text>
+          {loading ? (
+            <ActivityIndicator color={theme.colors.background} />
+          ) : (
+            <Text style={styles.buttonText}>Log in</Text>
+          )}
         </Pressable>
         <View style={styles.row}>
           <Text>You do not have an account yet?</Text>
@@ -108,7 +146,11 @@ export default function LoginScreen({ navigation }) {
               style={[styles.button, styles.buttonClose]}
               onPress={() => setModalVisible(!modalVisible)}
             >
-              <Text style={styles.textStyle}>Close</Text>
+              <Text style={styles.textStyle}>
+                {
+                  errorMessage === 'something went wrong on our side' ? 'Try again' : errorMessage ==='Invalid password' ? 'Try again': errorMessage === 'User not found'? 'Please try another email ' : ''
+                }
+              </Text>
             </Pressable>
           </View>
         </View>
